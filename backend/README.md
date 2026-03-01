@@ -9,6 +9,8 @@ Backend-only implementation for the rule-driven analytics SaaS.
 - Zod for payload validation
 - Puppeteer for audit PDF export
 - node-cron for scheduled flight-risk checks
+- Email providers: Resend or Postmark (configurable)
+- AES-256-GCM encryption for sensitive data
 
 ## What is implemented
 
@@ -69,7 +71,7 @@ Backend-only implementation for the rule-driven analytics SaaS.
 ### Tables expected by backend
 
 - `companies` (`id`, `name`, `plan`, `config_json`)
-- `users` (`id`, `company_id`, `role`)
+- `users` (`id`, `company_id`, `role`, `email`)
 - `employees` (`id`, `company_id`, `manager_id`, `salary`, `role`, `tenure_months`, `missed_checkins`, `notes`)
 - `scores` (`employee_id`, `component_values`, `final_score`, `formula_version`, `month`)
 - `peer_feedback` (`from_employee`, `to_employee`, `score`, `timestamp`)
@@ -83,9 +85,9 @@ Backend-only implementation for the rule-driven analytics SaaS.
   - `id`, `patch`, `reason`, `changedBy`, `createdAt`, `status`
   - optional: `approvedBy`, `approvedAt`, `rejectedBy`, `rejectedAt`, `rejectionReason`
 
-### RPC expected
+## Database encryption
 
-- `decrypt_salary(encrypted_input text) returns numeric`
+Salary data is encrypted using AES-256-GCM cipher in the application layer (no PostgreSQL RPC needed).
 
 ## Plan gates implemented
 
@@ -98,11 +100,15 @@ Backend-only implementation for the rule-driven analytics SaaS.
 2. Install dependencies: `npm install`
 3. Generate Prisma client: `npm run prisma:generate`
 4. Create/update PostgreSQL tables from Prisma schema: `npm run prisma:push`
-  - or use migrations in team/dev workflow: `npm run prisma:migrate`
-6. Start API: `npm run dev`
+   - or use migrations in team/dev workflow: `npm run prisma:migrate`
+5. Start API: `npm run dev`
 
 ## Notes
 
-- Notification service is a placeholder abstraction (`notification.service.js`) ready for Postmark/Resend wiring.
+- Email notifications support three providers (via `EMAIL_PROVIDER` env var):
+  - `console` (default) - logs to console for development
+  - `resend` - uses Resend API (requires `RESEND_API_KEY`)
+  - `postmark` - uses Postmark API (requires `POSTMARK_API_KEY`)
+- Salary data is encrypted using AES-256-GCM (requires `ENCRYPTION_SECRET` in .env)
 - Audit records are hash-chained (`previous_hash` + current payload) for stronger tamper evidence.
 - Prisma schema is included at `backend/prisma/schema.prisma`.

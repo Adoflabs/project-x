@@ -125,18 +125,8 @@ export const employeeRepository = {
   },
 
   async decryptSalary(encryptedSalary) {
-    try {
-      const rows = await prisma.$queryRaw`
-        SELECT decrypt_salary(${encryptedSalary}::text) AS value
-      `;
-
-      const parsed = Number(rows?.[0]?.value);
-      if (!Number.isNaN(parsed)) return parsed;
-    } catch {
-      const maybe = Number(encryptedSalary);
-      if (!Number.isNaN(maybe)) return maybe;
-      throw new Error('Failed to decrypt salary via PostgreSQL function decrypt_salary');
-    }
+    const { decryptSalary } = await import('../utils/encryption.js');
+    return decryptSalary(encryptedSalary);
 
     const maybe = Number(encryptedSalary);
     if (!Number.isNaN(maybe)) return maybe;
