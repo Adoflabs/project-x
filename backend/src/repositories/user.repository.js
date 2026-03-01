@@ -6,4 +6,20 @@ export const userRepository = {
       where: { id: authUserId },
     });
   },
+
+  async getUsersByCompanyAndRoles(companyId, roles) {
+    return prisma.user.findMany({
+      where: {
+        companyId,
+        role: {
+          in: roles,
+        },
+      },
+      select: {
+        id: true,
+        role: true,
+        email: true,
+      },
+    });
+  },
 };
