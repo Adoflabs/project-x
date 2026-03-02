@@ -51,9 +51,25 @@ export const riskRepository = {
       triggered_by: row.triggeredBy,
       resolved_status: row.resolvedStatus,
       created_at: row.createdAt,
-      employees: {
+      employee: {
         company_id: row.employee.companyId,
       },
     }));
+  },
+
+  async resolveFlag(flagId) {
+    const row = await prisma.flightRiskFlag.update({
+      where: { id: flagId },
+      data: { resolvedStatus: true },
+    });
+
+    return {
+      id: Number(row.id),
+      employee_id: row.employeeId,
+      reason: row.reason,
+      triggered_by: row.triggeredBy,
+      resolved_status: row.resolvedStatus,
+      created_at: row.createdAt,
+    };
   },
 };

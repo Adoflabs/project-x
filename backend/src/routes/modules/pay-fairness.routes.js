@@ -19,9 +19,11 @@ const querySchema = z.object({
   overpaidLabel: z.string().min(1).optional(),
 });
 
+import { requireCompanyAccess } from '../../middlewares/company-access.middleware.js';
+
 export const payFairnessRouter = Router();
 
-payFairnessRouter.get('/:companyId/analyze', requireAuth, allowRoles('owner', 'hr'), validate({ params: companyIdParamSchema, query: querySchema }), asyncHandler(async (req, res) => {
+payFairnessRouter.get('/:companyId/analyze', requireAuth, allowRoles('owner', 'hr'), requireCompanyAccess, validate({ params: companyIdParamSchema, query: querySchema }), asyncHandler(async (req, res) => {
   const { companyId } = req.validated.params;
   const parsed = req.validated.query;
   const analysis = await payFairnessService.analyze({

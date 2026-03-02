@@ -19,4 +19,37 @@ export const feedbackRepository = {
     if (avg == null) return 0;
     return Number(Number(avg).toFixed(2));
   },
+
+  async createFeedback({ fromEmployeeId, toEmployeeId, score }) {
+    const row = await prisma.peerFeedback.create({
+      data: {
+        fromEmployee: fromEmployeeId,
+        toEmployee: toEmployeeId,
+        score,
+      },
+    });
+
+    return {
+      id: Number(row.id),
+      from_employee: row.fromEmployee,
+      to_employee: row.toEmployee,
+      score: Number(row.score),
+      timestamp: row.timestamp,
+    };
+  },
+
+  async listFeedbackForEmployee(employeeId) {
+    const rows = await prisma.peerFeedback.findMany({
+      where: { toEmployee: employeeId },
+      orderBy: { timestamp: 'desc' },
+    });
+
+    return rows.map((row) => ({
+      id: Number(row.id),
+      from_employee: row.fromEmployee,
+      to_employee: row.toEmployee,
+      score: Number(row.score),
+      timestamp: row.timestamp,
+    }));
+  },
 };

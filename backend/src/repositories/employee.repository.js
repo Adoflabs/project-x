@@ -127,9 +127,5 @@ export const employeeRepository = {
   async decryptSalary(encryptedSalary) {
     const { decryptSalary } = await import('../utils/encryption.js');
     return decryptSalary(encryptedSalary);
-
-    const maybe = Number(encryptedSalary);
-    if (!Number.isNaN(maybe)) return maybe;
-    return 0;
   },
 };
