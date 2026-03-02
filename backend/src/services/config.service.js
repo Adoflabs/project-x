@@ -26,8 +26,17 @@ function enforcePlanCaps(company, parsedPatch) {
 export const configService = {
   async getCompanyConfig(companyId) {
     const company = await companyRepository.getCompanyById(companyId);
+    if (!company) throw new HttpError(404, 'Company not found');
     return company.config_json;
   },
+
+  async listPendingFormulaChanges(companyId) {
+    const company = await companyRepository.getCompanyById(companyId);
+    if (!company) throw new HttpError(404, 'Company not found');
+    const config = company.config_json || {};
+    return (config.pendingFormulaChanges || []).filter((c) => c.status === 'pending');
+  },
+
 
   async updateFormulaConfig({ companyId, changedBy, role, patch, reason }) {
     const company = await companyRepository.getCompanyById(companyId);

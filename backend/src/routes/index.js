@@ -8,6 +8,8 @@ import { payFairnessRouter } from './modules/pay-fairness.routes.js';
 import { dashboardRouter } from './modules/dashboard.routes.js';
 import { docsRouter } from './modules/docs.routes.js';
 import { employeeRouter } from './modules/employee.routes.js';
+import { feedbackRouter } from './modules/feedback.routes.js';
+import { auditRouter } from './modules/audit.routes.js';
 
 export const apiRouter = Router();
 
@@ -19,3 +21,5 @@ apiRouter.use('/pay-fairness', payFairnessRouter);
 apiRouter.use('/dashboard', dashboardRouter);
 apiRouter.use('/docs', docsRouter);
 apiRouter.use('/employees', employeeRouter);
+apiRouter.use('/feedback', feedbackRouter);
+apiRouter.use('/audit', auditRouter);

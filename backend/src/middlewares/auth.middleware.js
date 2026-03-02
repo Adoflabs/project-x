@@ -14,7 +14,11 @@ export async function requireAuth(req, res, next) {
 
   const token = header.slice('Bearer '.length);
   try {
-    const payload = jwt.verify(token, env.jwtSecret);
+    const verifyOptions = {};
+    if (env.jwtAudience) verifyOptions.audience = env.jwtAudience;
+    if (env.jwtIssuer) verifyOptions.issuer = env.jwtIssuer;
+
+    const payload = jwt.verify(token, env.jwtSecret, verifyOptions);
     const authUserId = payload.sub || payload.id;
 
     if (!authUserId) {

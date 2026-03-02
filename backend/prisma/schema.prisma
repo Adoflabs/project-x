@@ -53,6 +53,8 @@ model Employee {
   peerFeedbackTo   PeerFeedback[]    @relation("PeerFeedbackTo")
   auditLogs        AuditLog[]
 
+  @@index([companyId])
+  @@index([managerId])
   @@map("employees")
 }
 
@@ -67,6 +69,8 @@ model Score {
   employee        Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@unique([employeeId, month])
+  @@index([employeeId])
+  @@index([month])
   @@map("scores")
 }
 
@@ -91,6 +95,8 @@ model FlightRiskFlag {
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
+  @@index([employeeId])
+  @@index([resolvedStatus])
   @@map("flight_risk_flags")
 }
 
@@ -107,6 +113,8 @@ model AuditLog {
   hash         String
   employee     Employee? @relation(fields: [employeeId], references: [id], onDelete: SetNull)
 
+  @@index([employeeId])
+  @@index([timestamp])
   @@map("audit_logs")
 }
 
