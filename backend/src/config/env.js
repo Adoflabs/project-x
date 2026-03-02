@@ -19,6 +19,7 @@ export const env = {
   jwtIssuer: process.env.JWT_ISSUER || null,    // e.g. 'https://yourauth.supabase.co/auth/v1'
   encryptionSecret: process.env.ENCRYPTION_SECRET,
   riskEvalCron: process.env.RISK_EVAL_CRON || '0 3 * * *',
+  formulaApprovalCron: process.env.FORMULA_APPROVAL_CRON || '0 * * * *',
   appBaseUrl: process.env.APP_BASE_URL || 'http://localhost:4000',
   emailProvider: process.env.EMAIL_PROVIDER || 'console',
   resendApiKey: process.env.RESEND_API_KEY,

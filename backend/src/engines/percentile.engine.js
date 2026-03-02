@@ -8,27 +8,39 @@ function percentileRank(values, value) {
 }
 
 export function runPayFairnessAnalysis(rows, opts) {
-  if (!rows.length) {
+  // Filter rows with null/undefined/invalid salary to avoid NaN distorting percentiles
+  const validRows = rows.filter((r) => r.salary != null && !isNaN(Number(r.salary)));
+  const excludedCount = rows.length - validRows.length;
+
+  if (!validRows.length) {
     throw new HttpError(400, 'No score/salary data available for selected cohort.');
   }
 
-  const scoreVals = rows.map((r) => Number(r.score));
-  const payVals = rows.map((r) => Number(r.salary));
+  const scoreVals = validRows.map((r) => Number(r.score));
+  const payVals = validRows.map((r) => Number(r.salary));
 
   const scoreTopPct = opts.scoreTopPct ?? 75;
   const scoreBottomPct = opts.scoreBottomPct ?? 25;
-  const payTopPct = opts.payTopPct ?? 50;
-  const payBottomPct = opts.payBottomPct ?? 50;
+  const payTopPct = opts.payTopPct ?? 75;
+  const payBottomPct = opts.payBottomPct ?? 25;
 
-  return rows.map((r) => {
+  const results = validRows.map((r) => {
     const scorePercentile = percentileRank(scoreVals, Number(r.score));
     const payPercentile = percentileRank(payVals, Number(r.salary));
 
-    let quadrant = 'balanced';
-    if (scorePercentile >= scoreTopPct && payPercentile <= payBottomPct) {
+    let quadrant;
+    if (scorePercentile >= scoreTopPct && payPercentile < payTopPct) {
+      // High performer, underpaid
       quadrant = opts.starsLabel || 'stars_underpaid';
+    } else if (scorePercentile >= scoreTopPct && payPercentile >= payTopPct) {
+      // High performer, well paid — retain
+      quadrant = 'retained_star';
     } else if (scorePercentile <= scoreBottomPct && payPercentile >= payTopPct) {
+      // Low performer, overpaid
       quadrant = opts.overpaidLabel || 'overpaid_underperformer';
+    } else {
+      // Low performer, low pay
+      quadrant = 'low_investment';
     }
 
     return {
@@ -38,4 +50,6 @@ export function runPayFairnessAnalysis(rows, opts) {
       quadrant,
     };
   });
+
+  return { results, excludedCount };
 }

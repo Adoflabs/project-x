@@ -36,10 +36,6 @@ export function encryptSalary(salaryValue) {
 export function decryptSalary(encryptedValue) {
   if (!encryptedValue) return null;
 
-  if (!encryptedValue.includes(':') && !isNaN(Number(encryptedValue))) {
-    return Number(encryptedValue);
-  }
-
   try {
     const offset = SALT_LENGTH * 2; // hex chars for salt
     const saltHex = encryptedValue.slice(0, offset);
@@ -61,9 +57,6 @@ export function decryptSalary(encryptedValue) {
 
     return Number(decrypted);
   } catch (error) {
-    const fallback = Number(encryptedValue);
-    if (!isNaN(fallback)) return fallback;
-
     throw new Error(`Failed to decrypt salary: ${error.message}`);
   }
 }

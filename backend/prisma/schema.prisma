@@ -39,6 +39,7 @@ model Employee {
   managerId        String?           @map("manager_id") @db.Uuid
   salary           String?
   role             String?
+  department       String?
   tenureMonths     Int               @default(0) @map("tenure_months")
   missedCheckins   Int               @default(0) @map("missed_checkins")
   notes            String?
@@ -92,6 +93,7 @@ model FlightRiskFlag {
   reason         String
   triggeredBy    String    @map("triggered_by")
   resolvedStatus Boolean   @default(false) @map("resolved_status")
+  severity       String    @default("low")
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 

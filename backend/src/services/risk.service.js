@@ -16,7 +16,7 @@ function getScoreDrop(history) {
 function getMonthDateRange(month) {
   const [year, mon] = month.split('-').map(Number);
   const from = new Date(Date.UTC(year, mon - 1, 1));
-  const to = new Date(Date.UTC(year, mon, 0, 23, 59, 59, 999)); // day 0 of next month = last day of this month
+  const to = new Date(Date.UTC(year, mon, 0, 23, 59, 59, 999));
   return { fromIso: from.toISOString(), toIso: to.toISOString() };
 }
 
@@ -25,12 +25,16 @@ export const riskService = {
     const config = await configService.getCompanyConfig(companyId);
     const riskConfig = config?.flightRisk || {};
 
-    const employees = await employeeRepository.listByCompany(companyId);
+    const { data: employees } = await employeeRepository.listByCompany(companyId, { page: 1, perPage: 500 });
     const flags = [];
 
     const { fromIso, toIso } = getMonthDateRange(month);
 
     for (const employee of employees) {
+      // Skip if there is already an open flag for this employee
+      const hasOpenFlag = await riskRepository.findOpenFlagForEmployee(employee.id);
+      if (hasOpenFlag) continue;
+
       const history = await scoreRepository.getEmployeeScores(employee.id, 2);
       const peerAvg = await feedbackRepository.getPeerFeedbackAverage(employee.id, fromIso, toIso);
 
@@ -50,6 +54,7 @@ export const riskService = {
         reason: result.reasons.join(','),
         triggered_by: actorUserId,
         resolved_status: false,
+        severity: result.severity,
       });
     }
 
@@ -57,18 +62,22 @@ export const riskService = {
 
     if (inserted.length > 0) {
       const recipients = config?.flightRisk?.alertRecipients || ['owner', 'hr'];
-      await notificationService.notifyRoles(companyId, recipients, 'Flight Risk Alerts', `${inserted.length} flight-risk alerts generated.`);
+      await notificationService.notifyRoles(companyId, recipients, 'Flight Risk Alerts', `${inserted.length} flight-risk alert(s) generated for ${month}.`);
     }
 
     return inserted;
   },
 
+  async listFlags(companyId, { status = 'open', page = 1, perPage = 50 } = {}) {
+    return riskRepository.listFlags(companyId, { status, page, perPage });
+  },
+
+  /** @deprecated use listFlags */
   async listOpenFlags(companyId) {
     return riskRepository.listOpenFlags(companyId);
   },
 
   async resolveFlag(flagId, companyId, actorUserId) {
-    // Verify the flag belongs to this company before resolving
     const openFlags = await riskRepository.listOpenFlags(companyId);
     const flag = openFlags.find((f) => f.id === flagId);
     if (!flag) {
@@ -86,6 +95,34 @@ export const riskService = {
       employeeId: flag.employee_id,
     });
 
+    await notificationService.notifyRoles(
+      companyId,
+      ['owner', 'hr'],
+      'Flight Risk Flag Resolved',
+      `Flag for employee ${flag.employee_id} (reason: ${flag.reason}) was resolved by ${actorUserId}.`,
+    );
+
     return updated;
+  },
+
+  async bulkResolveFlags(flagIds, companyId, actorUserId) {
+    // Verify all flags belong to this company (via open flags)
+    const allOpen = await riskRepository.listOpenFlags(companyId);
+    const ownedIds = new Set(allOpen.map((f) => f.id));
+    const validIds = flagIds.filter((id) => ownedIds.has(id));
+
+    if (validIds.length === 0) throw new HttpError(404, 'No matching open flags found for this company');
+
+    const resolvedCount = await riskRepository.resolveManyFlags(validIds.map((id) => BigInt(id)));
+
+    await auditService.log({
+      tableName: 'flight_risk_flags',
+      changedBy: actorUserId,
+      oldValue: null,
+      newValue: { resolvedIds: validIds },
+      reason: 'bulk_flag_resolved',
+    });
+
+    return { resolved: resolvedCount, skipped: flagIds.length - validIds.length };
   },
 };
