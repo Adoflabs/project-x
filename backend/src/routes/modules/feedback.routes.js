@@ -21,10 +21,15 @@ export const feedbackRouter = Router();
 feedbackRouter.post('/', requireAuth, allowRoles('owner', 'hr', 'manager'), validate({ body: bodySchema }), asyncHandler(async (req, res) => {
   const { fromEmployeeId, toEmployeeId, score } = req.validated.body;
 
-  // Confirm the target employee belongs to the caller's company
-  const toEmp = await employeeRepository.getById(toEmployeeId);
+  // Confirm both the from- and to-employees belong to the caller's company
+  const [fromEmp, toEmp] = await Promise.all([
+    employeeRepository.getById(fromEmployeeId),
+    employeeRepository.getById(toEmployeeId),
+  ]);
+  if (!fromEmp) throw new HttpError(404, 'From-employee not found');
+  if (fromEmp.company_id !== req.appUser.companyId) throw new HttpError(403, 'Access denied: from-employee company mismatch');
   if (!toEmp) throw new HttpError(404, 'To-employee not found');
-  if (toEmp.company_id !== req.appUser.companyId) throw new HttpError(403, 'Access denied: company mismatch');
+  if (toEmp.company_id !== req.appUser.companyId) throw new HttpError(403, 'Access denied: to-employee company mismatch');
 
   const feedback = await feedbackService.submitFeedback({
     fromEmployeeId,

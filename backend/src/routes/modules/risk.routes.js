@@ -6,12 +6,16 @@ import { requireAuth } from '../../middlewares/auth.middleware.js';
 import { allowRoles } from '../../middlewares/rbac.middleware.js';
 import { requireCompanyAccess } from '../../middlewares/company-access.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
-import { companyIdParamSchema, flagIdParamSchema, monthSchema } from '../../validation/common.schemas.js';
+import { companyIdParamSchema, flagIdParamSchema, monthSchema, paginationQuerySchema } from '../../validation/common.schemas.js';
 import { riskService } from '../../services/risk.service.js';
 
 const bodySchema = z.object({
   month: monthSchema,
 }).strict();
+
+const flagsQuerySchema = paginationQuerySchema.extend({
+  status: z.enum(['open', 'resolved', 'all']).default('open'),
+});
 
 export const riskRouter = Router();
 
@@ -22,10 +26,11 @@ riskRouter.post('/:companyId/evaluate', requireAuth, allowRoles('owner', 'hr'), 
   res.json({ generated: flags.length, flags });
 }));
 
-riskRouter.get('/:companyId/flags', requireAuth, allowRoles('owner', 'hr', 'manager'), requireCompanyAccess, validate({ params: companyIdParamSchema }), asyncHandler(async (req, res) => {
+riskRouter.get('/:companyId/flags', requireAuth, allowRoles('owner', 'hr', 'manager'), requireCompanyAccess, validate({ params: companyIdParamSchema, query: flagsQuerySchema }), asyncHandler(async (req, res) => {
   const { companyId } = req.validated.params;
-  const flags = await riskService.listOpenFlags(companyId);
-  res.json({ flags });
+  const { status, page, perPage } = req.validated.query;
+  const result = await riskService.listFlags(companyId, { status, page, perPage });
+  res.json(result);
 }));
 
 riskRouter.patch('/flags/:flagId/resolve', requireAuth, allowRoles('owner', 'hr'), validate({ params: flagIdParamSchema }), asyncHandler(async (req, res) => {

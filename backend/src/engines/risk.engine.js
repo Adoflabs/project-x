@@ -33,8 +33,10 @@ export function evaluateFlightRisk(employeeContext, config) {
     reasons.push('early_tenure_sensitivity');
   }
 
+  const severity = reasons.length >= 4 ? 'high' : reasons.length >= 2 ? 'medium' : 'low';
   return {
     flagged: reasons.length > 0,
     reasons,
+    severity,
   };
 }

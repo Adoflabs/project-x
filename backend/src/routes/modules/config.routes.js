@@ -18,7 +18,10 @@ const bodySchema = z.object({
     })),
     frequency: z.enum(['weekly', 'monthly', 'quarterly']),
     customMetrics: z.array(z.string()).optional(),
-  }).strict(),
+  }).strict().refine(
+    (p) => Math.round(p.components.reduce((s, c) => s + c.weight, 0)) === 100,
+    { message: 'Component weights must sum to 100', path: ['components'] },
+  ),
   reason: z.string().min(3),
 }).strict();
 

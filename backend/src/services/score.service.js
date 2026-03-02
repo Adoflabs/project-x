@@ -2,6 +2,7 @@ import { calculateScore, getScoreTrend } from '../engines/formula.engine.js';
 import { scoreRepository } from '../repositories/score.repository.js';
 import { configService } from './config.service.js';
 import { auditService } from './audit.service.js';
+import { notificationService } from './notification.service.js';
 import { HttpError } from '../utils/http-error.js';
 
 export const scoreService = {
@@ -34,6 +35,21 @@ export const scoreService = {
       employeeId,
     });
 
+    await notificationService.notifyRoles(
+      companyId,
+      ['owner', 'hr'],
+      'Score Calculated',
+      `Score for employee ${employeeId} in ${month}: ${score.finalScore}`,
+    );
+
     return { ...row, trend };
+  },
+
+  async getEmployeeScores(employeeId, limit = 12) {
+    return scoreRepository.getEmployeeScores(employeeId, limit);
+  },
+
+  async listCompanyScores(companyId, month) {
+    return scoreRepository.listCompanyScores(companyId, month);
   },
 };

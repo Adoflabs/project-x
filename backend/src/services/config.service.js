@@ -122,6 +122,13 @@ export const configService = {
       reason: `approve_formula_change:${changeId}`,
     });
 
+    await notificationService.notifyRoles(
+      companyId,
+      ['owner', 'hr'],
+      'Formula Change Approved',
+      `Formula change ${changeId} submitted by ${change.changedBy} was approved.`,
+    );
+
     return updated.config_json;
   },
 
@@ -153,6 +160,13 @@ export const configService = {
       newValue: nextConfig.pendingFormulaChanges,
       reason: `reject_formula_change:${changeId}`,
     });
+
+    await notificationService.notifyRoles(
+      companyId,
+      ['owner', 'hr'],
+      'Formula Change Rejected',
+      `Formula change ${changeId} submitted by ${exists.changedBy} was rejected. Reason: ${reason}`,
+    );
 
     return updated.config_json;
   },

@@ -6,7 +6,7 @@ import { requireAuth } from '../../middlewares/auth.middleware.js';
 import { allowRoles } from '../../middlewares/rbac.middleware.js';
 import { requireBodyCompanyAccess } from '../../middlewares/company-access.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
-import { uuidSchema, employeeIdParamSchema } from '../../validation/common.schemas.js';
+import { uuidSchema, employeeIdParamSchema, paginationQuerySchema } from '../../validation/common.schemas.js';
 import { employeeService } from '../../services/employee.service.js';
 import { employeeRepository } from '../../repositories/employee.repository.js';
 import { HttpError } from '../../utils/http-error.js';
@@ -16,21 +16,24 @@ const importBodySchema = z.object({
   csvText: z.string().min(1).max(5 * 1024 * 1024),
 }).strict();
 
+const listQuerySchema = paginationQuerySchema.extend({
+  managerId: uuidSchema.optional(),
+});
+
 export const employeeRouter = Router();
 
-employeeRouter.get('/', requireAuth, allowRoles('owner', 'hr', 'manager'), asyncHandler(async (req, res) => {
+employeeRouter.get('/', requireAuth, allowRoles('owner', 'hr', 'manager'), validate({ query: listQuerySchema }), asyncHandler(async (req, res) => {
   const companyId = req.appUser.companyId;
-  const managerId = req.query.managerId;
+  const { managerId, page, perPage } = req.validated.query;
 
-  let employees;
   if (req.appUser.role === 'manager' && managerId) {
-    // Managers can only see their own direct reports
     if (managerId !== req.appUser.id) throw new HttpError(403, 'Managers can only list their own direct reports');
-    employees = await employeeRepository.listByManager(managerId);
-  } else {
-    employees = await employeeRepository.listByCompany(companyId);
+    const result = await employeeRepository.listByManager(managerId, { page, perPage });
+    return res.json(result);
   }
-  res.json({ employees });
+
+  const result = await employeeRepository.listByCompany(companyId, { page, perPage });
+  res.json(result);
 }));
 
 employeeRouter.get('/:employeeId', requireAuth, allowRoles('owner', 'hr', 'manager'), validate({ params: employeeIdParamSchema }), asyncHandler(async (req, res) => {
