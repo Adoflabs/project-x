@@ -1,3 +1,7 @@
+'use client';
+
+import { Badge } from './badge';
+
 interface ScoreBadgeProps {
   score: number;
   size?: 'sm' | 'md' | 'lg';
@@ -5,13 +9,12 @@ interface ScoreBadgeProps {
 }
 
 export default function ScoreBadge({ score, size = 'md', showLabel = true }: ScoreBadgeProps) {
-  const getVariant = (s: number) => {
-    if (s >= 80) return 'high';
-    if (s >= 60) return 'medium';
-    return 'low';
+  const getVariant = () => {
+    if (score >= 80) return 'success';
+    if (score >= 60) return 'warning';
+    return 'destructive';
   };
 
-  const variant = getVariant(score);
   const sizeClasses = {
     sm: 'text-xs px-2 py-1',
     md: 'text-sm px-3 py-1.5',
@@ -19,9 +22,9 @@ export default function ScoreBadge({ score, size = 'md', showLabel = true }: Sco
   };
 
   return (
-    <span className={`score-badge-${variant} inline-flex items-center gap-1.5 ${sizeClasses[size]}`}>
-      <span className="font-mono font-bold">{score}</span>
+    <Badge variant={getVariant() as any} className={`inline-flex items-center gap-1.5 font-mono font-bold ${sizeClasses[size]}`}>
+      {score}
       {showLabel && <span className="text-[0.7em] opacity-70">/100</span>}
-    </span>
+    </Badge>
   );
 }
