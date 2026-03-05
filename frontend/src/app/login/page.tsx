@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores';
+import { api } from '@/lib/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -32,9 +33,10 @@ export default function LoginPage() {
 
       const data = await response.json();
       
-      // Store token in localStorage
+      // Store token in localStorage and API client
       if (data.token) {
         localStorage.setItem('ei_token', data.token);
+        api.setToken(data.token);
       }
       
       // Update auth store
@@ -53,11 +55,13 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass-card p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-accent-blue to-accent-cyan flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">⚡</span>
+          <div className="w-20 h-20 rounded-2xl bg-white flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <svg viewBox="0 0 100 100" className="w-12 h-12" fill="currentColor">
+              <text x="50" y="75" fontSize="80" fontWeight="bold" textAnchor="middle" fill="#0a0e1a">V</text>
+            </svg>
           </div>
-          <h1 className="text-2xl font-bold text-text-primary mb-2">Employee Intelligence</h1>
-          <p className="text-sm text-text-secondary">Sign in to your account</p>
+          <h1 className="text-2xl font-bold text-text-primary mb-2">Veridion</h1>
+          <p className="text-sm text-text-secondary">Employee Intelligence Platform</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
@@ -98,7 +102,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-3 rounded-lg bg-accent-blue hover:bg-accent-blue/90 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3 rounded-lg bg-white/10 hover:bg-white/15 text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-white/20"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>

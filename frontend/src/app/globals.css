@@ -6,10 +6,10 @@
   --color-bg-layer2: #0f1629;
   --color-bg-sidebar: #0d1120;
 
-  /* Accent */
-  --color-accent-blue: #3b82f6;
-  --color-accent-cyan: #06b6d4;
-  --color-accent-purple: #8b5cf6;
+  /* Monochromatic water theme - no blue */
+  --color-accent-primary: #e5e7eb;
+  --color-accent-secondary: #d1d5db;
+  --color-accent-tertiary: #9ca3af;
 
   /* Semantic */
   --color-success: #10b981;
@@ -17,19 +17,22 @@
   --color-danger: #ef4444;
 
   /* Text */
-  --color-text-primary: #f1f5f9;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #475569;
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-text-muted: #9ca3af;
 
-  /* Glass */
+  /* Glass - water-like transparency */
   --color-glass-bg: rgba(255, 255, 255, 0.03);
-  --color-glass-border: rgba(255, 255, 255, 0.07);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
   --color-glass-hover: rgba(255, 255, 255, 0.06);
 
-  /* Fonts */
-  --font-display: "Outfit", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
-  --font-body: "Sora", sans-serif;
+  /* Fonts - San Francisco Pro */
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  --font-mono: "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Droid Sans Mono", "Source Code Pro", monospace;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  
+  /* shadcn/ui variables */
+  --radius: 0.5rem;
 }
 
 /* ──── BASE RESETS ──── */
@@ -57,19 +60,35 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(135deg, #1e3a5f 0%, #0a0e1a 50%, #1a1040 100%);
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.025) 0%, transparent 50%),
+    linear-gradient(135deg, #0f1419 0%, #0a0e1a 50%, #0d1015 100%);
   pointer-events: none;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
 }
 
 /* ──── GLASS CARD ──── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(16px) saturate(180%);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px) saturate(120%);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  border-radius: 24px;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
 .glass-card-hover:hover {
@@ -77,16 +96,38 @@ body::before {
   border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-2px);
   box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: all 0.2s ease;
+    0 12px 48px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ──── NEON GLOW ──── */
 .neon-glow {
   box-shadow:
-    0 0 20px rgba(59, 130, 246, 0.3),
-    0 0 40px rgba(6, 182, 212, 0.1);
+    0 0 20px rgba(255, 255, 255, 0.2),
+    0 0 40px rgba(255, 255, 255, 0.1),
+    0 0 60px rgba(255, 255, 255, 0.05);
+}
+
+/* ──── GLASS VARIANTS ──── */
+.glass-card-strong {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(28px) saturate(130%);
+  -webkit-backdrop-filter: blur(28px) saturate(130%);
+  border-radius: 24px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.glass-card-subtle {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px) saturate(110%);
+  -webkit-backdrop-filter: blur(20px) saturate(110%);
+  border-radius: 20px;
 }
 
 /* ──── SCROLLBAR ──── */
@@ -288,15 +329,15 @@ body::before {
 .nav-active {
   background: linear-gradient(
     90deg,
-    rgba(59, 130, 246, 0.15) 0%,
+    rgba(255, 255, 255, 0.08) 0%,
     transparent 100%
   );
-  border-left: 3px solid #3b82f6;
-  color: #60a5fa;
+  border-left: 3px solid rgba(255, 255, 255, 0.3);
+  color: #f9fafb;
 }
 
 .nav-active .nav-icon {
-  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
 }
 
 /* ──── RECHARTS OVERRIDES ──── */
@@ -351,17 +392,60 @@ input[type="range"]::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: rgba(255, 255, 255, 0.8);
   cursor: pointer;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
 input[type="range"]::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   border: none;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+/* ──── SELECT DROPDOWNS ──── */
+select {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+select option {
+  background-color: #0f1629;
+  color: var(--color-text-primary);
+  padding: 8px;
+}
+
+select:focus option:checked,
+select option:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+}
+
+/* Fix for webkit browsers (Chrome, Safari) */
+select option {
+  background: #0f1629;
+  color: #f1f5f9;
+}
+
+/* ──── DATALIST DROPDOWNS ──── */
+input[list]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+datalist {
+  background-color: #0f1629;
+}
+
+/* ──── AUTOCOMPLETE DROPDOWNS ──── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-text-primary);
+  -webkit-box-shadow: 0 0 0px 1000px #0f1629 inset;
+  transition: background-color 5000s ease-in-out 0s;
 }

@@ -4,15 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUIStore } from '@/stores';
 import {
-  LayoutDashboard, Users, Settings, AlertTriangle, DollarSign,
+  LayoutDashboard, Users, AlertTriangle, DollarSign,
   ClipboardList, MessageSquare, FileText, Bell, User, HelpCircle,
-  ChevronLeft, ChevronRight, Zap,
+  ChevronLeft, ChevronRight, Settings,
 } from 'lucide-react';
 
 const mainNav = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/' },
   { id: 'employees', label: 'Employees', icon: Users, href: '/employees' },
-  { id: 'config', label: 'Scorecard Config', icon: Settings, href: '/config' },
   { id: 'risk', label: 'Flight Risk', icon: AlertTriangle, href: '/risk' },
   { id: 'pay', label: 'Pay Fairness', icon: DollarSign, href: '/pay-fairness' },
   { id: 'forms', label: 'Forms', icon: ClipboardList, href: '/forms' },
@@ -35,20 +34,24 @@ export default function Sidebar() {
     <>
       {/* Desktop sidebar */}
       <aside
-        className="hidden lg:flex flex-col fixed left-0 top-0 h-screen z-40 border-r border-white/[0.06] transition-all duration-300 ease-in-out"
+        className="hidden lg:flex flex-col fixed left-0 top-0 h-screen z-40 border-r border-white/[0.1] transition-all duration-300 ease-in-out backdrop-blur-xl"
         style={{
           width: sidebarExpanded ? 240 : 64,
-          background: '#0d1120',
+          background: 'rgba(13, 17, 32, 0.7)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
         }}
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 h-16 border-b border-white/[0.06] shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-blue to-accent-cyan flex items-center justify-center shrink-0">
-            <Zap className="w-4 h-4 text-white" />
+          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 100 100" className="w-5 h-5" fill="currentColor">
+              <text x="50" y="75" fontSize="80" fontWeight="bold" textAnchor="middle" fill="#0a0e1a">V</text>
+            </svg>
           </div>
           {sidebarExpanded && (
             <span className="font-display text-lg font-bold tracking-tight text-text-primary whitespace-nowrap">
-              EI Platform
+              Veridion
             </span>
           )}
         </div>
@@ -66,7 +69,7 @@ export default function Sidebar() {
                     className={`
                       flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 relative group
                       ${isActive
-                        ? 'nav-active text-accent-blue'
+                        ? 'nav-active text-text-primary'
                         : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.04]'
                       }
                     `}
@@ -101,7 +104,7 @@ export default function Sidebar() {
                 className={`
                   flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150
                   ${isActive
-                    ? 'nav-active text-accent-blue'
+                    ? 'nav-active text-text-primary'
                     : 'text-text-muted hover:text-text-secondary hover:bg-white/[0.04]'
                   }
                 `}
@@ -123,7 +126,11 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile bottom bar */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.06]" style={{ background: '#0d1120' }}>
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.1] backdrop-blur-xl" style={{ 
+        background: 'rgba(13, 17, 32, 0.8)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+      }}>
         <div className="flex items-center justify-around py-2 px-1">
           {mainNav.slice(0, 5).map((item) => {
             const Icon = item.icon;
@@ -133,7 +140,7 @@ export default function Sidebar() {
                 key={item.id}
                 href={item.href}
                 className={`flex flex-col items-center gap-0.5 p-2 rounded-lg text-xs transition-colors ${
-                  isActive ? 'text-accent-blue' : 'text-text-muted'
+                  isActive ? 'text-text-primary' : 'text-text-muted'
                 }`}
               >
                 <Icon className="w-5 h-5" />

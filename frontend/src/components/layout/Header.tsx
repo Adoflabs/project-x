@@ -28,8 +28,12 @@ export default function Header() {
 
   return (
     <header
-      className="sticky top-0 z-30 h-16 border-b border-white/[0.06] backdrop-blur-md"
-      style={{ background: 'rgba(10, 14, 26, 0.8)' }}
+      className="sticky top-0 z-30 h-16 border-b border-white/[0.1] backdrop-blur-xl"
+      style={{ 
+        background: 'rgba(10, 14, 26, 0.7)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+      }}
     >
       <div className="flex items-center justify-between h-full px-4 lg:px-6">
         {/* Left: Hamburger + Breadcrumb */}
