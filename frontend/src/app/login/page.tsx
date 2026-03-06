@@ -18,7 +18,29 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`, {
+      // Demo mode: Skip API call and use mock user
+      if (email === 'admin@example.com' && password === 'password') {
+        const mockUser = {
+          id: 'demo-user-1',
+          email: 'admin@example.com',
+          name: 'Demo Admin',
+          role: 'admin' as const,
+          companyId: 'demo-company-1',
+        };
+        
+        // Store mock token
+        localStorage.setItem('ei_token', 'demo-token-12345');
+        
+        // Update auth store
+        setUser(mockUser);
+        
+        // Redirect to dashboard
+        router.push('/');
+        return;
+      }
+
+      // Try real API if not demo credentials
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api'}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -53,10 +75,10 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass-card p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-accent-blue to-accent-cyan flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">⚡</span>
+          <div className="w-16 h-16 rounded-lg bg-white/[0.05] border border-white/[0.1] flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl font-bold text-white">V</span>
           </div>
-          <h1 className="text-2xl font-bold text-text-primary mb-2">Employee Intelligence</h1>
+          <h1 className="text-2xl font-bold text-text-primary mb-2">Veridion</h1>
           <p className="text-sm text-text-secondary">Sign in to your account</p>
         </div>
 
