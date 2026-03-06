@@ -13,18 +13,6 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   useEffect(() => {
     async function checkAuth() {
-      // DEVELOPMENT BYPASS: Auto-login with test user
-      if (process.env.NODE_ENV === 'development') {
-        setUser({
-          id: '9f3931aa-81ed-4801-b0b7-253ec0790a23',
-          companyId: 'c7ebf8f6-4d27-4308-9c27-8fadf8983a1a',
-          role: 'owner',
-          email: 'admin@demo.com',
-        });
-        setLoading(false);
-        return;
-      }
-
       // Skip auth check for login page
       if (pathname === '/login') {
         setLoading(false);
@@ -39,12 +27,37 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
           return;
         }
 
-        // Verify token with backend
+        // Demo mode: If using demo token, use mock user
+        if (token === 'demo-token-12345') {
+          setUser({
+            id: 'demo-user-1',
+            email: 'admin@example.com',
+            companyId: 'demo-company-1',
+            role: 'owner',
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Try to verify token with backend
         const { user } = await api.getMe();
         setUser(user);
         setLoading(false);
       } catch (error) {
         console.error('Auth check failed:', error);
+        // If backend fails, check if we have a demo token
+        const token = localStorage.getItem('ei_token');
+        if (token === 'demo-token-12345') {
+          setUser({
+            id: 'demo-user-1',
+            email: 'admin@example.com',
+            companyId: 'demo-company-1',
+            role: 'owner',
+          });
+          setLoading(false);
+          return;
+        }
+        // Otherwise redirect to login
         localStorage.removeItem('ei_token');
         router.push('/login');
       }
