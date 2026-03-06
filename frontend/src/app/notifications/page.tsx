@@ -50,7 +50,7 @@ export default function NotificationsPage() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleMarkAllRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, read: true })));
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
   const handleClearAll = () => {
@@ -60,29 +60,29 @@ export default function NotificationsPage() {
   };
 
   const handleMarkRead = (id: string) => {
-    setNotifications(notifications.map(n => 
+    setNotifications(prev => prev.map(n => 
       n.id === id ? { ...n, read: true } : n
     ));
   };
 
   const handleDelete = (id: string) => {
-    setNotifications(notifications.filter(n => n.id !== id));
+    setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
   const getIcon = (type: string) => {
     switch (type) {
       case 'alert':
-        return '🚨';
+        return 'Alert';
       case 'config':
-        return '⚙️';
+        return 'Config';
       case 'feedback':
-        return '💬';
+        return 'Feedback';
       case 'score':
-        return '📊';
+        return 'Score';
       case 'system':
-        return '🔧';
+        return 'System';
       default:
-        return '📢';
+        return 'Notice';
     }
   };
 
@@ -124,17 +124,17 @@ export default function NotificationsPage() {
             key={notification.id}
             onClick={() => !notification.read && handleMarkRead(notification.id)}
             className={`glass-card p-4 hover:bg-white/[0.06] transition-colors cursor-pointer ${
-              !notification.read ? 'border-l-4 border-accent-blue' : ''
+              !notification.read ? 'border-l-4 border-white/30' : ''
             }`}
           >
             <div className="flex items-start gap-4">
-              <div className="text-2xl shrink-0">{getIcon(notification.type)}</div>
+              <div className="text-sm font-semibold text-text-primary shrink-0 w-16">{getIcon(notification.type)}</div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <h3 className="text-sm font-semibold text-text-primary">
                     {notification.title}
                     {!notification.read && (
-                      <span className="ml-2 inline-block w-2 h-2 rounded-full bg-accent-blue" />
+                      <span className="ml-2 inline-block w-2 h-2 rounded-full bg-white/50" />
                     )}
                   </h3>
                   <span className="text-xs text-text-muted whitespace-nowrap">{notification.time}</span>
