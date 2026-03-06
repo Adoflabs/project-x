@@ -3,6 +3,20 @@ import { env } from '../config/env.js';
 import { HttpError } from '../utils/http-error.js';
 
 export async function requireAuth(req, res, next) {
+  // Development bypass
+  if (process.env.NODE_ENV === 'development') {
+    req.auth = {
+      id: '9f3931aa-81ed-4801-b0b7-253ec0790a23',
+    };
+    req.appUser = {
+      id: '9f3931aa-81ed-4801-b0b7-253ec0790a23',
+      companyId: 'c7ebf8f6-4d27-4308-9c27-8fadf8983a1a',
+      role: 'owner',
+      email: 'admin@demo.com',
+    };
+    return next();
+  }
+
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
     return next(new HttpError(401, 'Missing bearer token'));

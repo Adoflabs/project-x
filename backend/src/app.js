@@ -14,10 +14,12 @@ export const app = express();
 
 app.use(helmet());
 
-const allowedOrigin = env.appBaseUrl;
+const allowedOrigins = env.allowedOrigins;
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || origin === allowedOrigin) return cb(null, true);
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
     cb(new Error('Not allowed by CORS'));
   },
   credentials: true,

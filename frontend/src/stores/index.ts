@@ -7,6 +7,7 @@ interface AuthState {
   isAuthenticated: boolean;
   setUser: (user: AppUser) => void;
   logout: () => void;
+  initAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -14,6 +15,20 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   setUser: (user) => set({ user, isAuthenticated: true }),
   logout: () => set({ user: null, isAuthenticated: false }),
+  initAuth: () => {
+    // Auto-login in development mode with mock user
+    if (process.env.NODE_ENV === 'development') {
+      const mockUser: AppUser = {
+        id: 'dev-user-1',
+        email: 'dev@veridion.com',
+        name: 'Dev User',
+        role: 'owner',
+        companyId: 'dev-company-1',
+        companyName: 'Veridion Demo',
+      };
+      set({ user: mockUser, isAuthenticated: true });
+    }
+  },
 }));
 
 // ──── UI Store ────
