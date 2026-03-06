@@ -26,8 +26,17 @@ function enforcePlanCaps(company, parsedPatch) {
 export const configService = {
   async getCompanyConfig(companyId) {
     const company = await companyRepository.getCompanyById(companyId);
+    if (!company) throw new HttpError(404, 'Company not found');
     return company.config_json;
   },
+
+  async listPendingFormulaChanges(companyId) {
+    const company = await companyRepository.getCompanyById(companyId);
+    if (!company) throw new HttpError(404, 'Company not found');
+    const config = company.config_json || {};
+    return (config.pendingFormulaChanges || []).filter((c) => c.status === 'pending');
+  },
+
 
   async updateFormulaConfig({ companyId, changedBy, role, patch, reason }) {
     const company = await companyRepository.getCompanyById(companyId);
@@ -113,6 +122,13 @@ export const configService = {
       reason: `approve_formula_change:${changeId}`,
     });
 
+    await notificationService.notifyRoles(
+      companyId,
+      ['owner', 'hr'],
+      'Formula Change Approved',
+      `Formula change ${changeId} submitted by ${change.changedBy} was approved.`,
+    );
+
     return updated.config_json;
   },
 
@@ -144,6 +160,13 @@ export const configService = {
       newValue: nextConfig.pendingFormulaChanges,
       reason: `reject_formula_change:${changeId}`,
     });
+
+    await notificationService.notifyRoles(
+      companyId,
+      ['owner', 'hr'],
+      'Formula Change Rejected',
+      `Formula change ${changeId} submitted by ${exists.changedBy} was rejected. Reason: ${reason}`,
+    );
 
     return updated.config_json;
   },

@@ -39,10 +39,45 @@ export const auditRepository = {
     };
   },
 
-  async listByEmployee(employeeId) {
+  async listByEmployee(employeeId, { page = 1, perPage = 50 } = {}) {
+    const skip = (page - 1) * perPage;
+    const [rows, total] = await prisma.$transaction([
+      prisma.auditLog.findMany({
+        where: { employeeId },
+        orderBy: { timestamp: 'desc' },
+        skip,
+        take: perPage,
+      }),
+      prisma.auditLog.count({ where: { employeeId } }),
+    ]);
+
+    return {
+      data: rows.map((row) => ({
+        id: Number(row.id),
+        table_name: row.tableName,
+        changed_by: row.changedBy,
+        employee_id: row.employeeId,
+        old_value: row.oldValue,
+        new_value: row.newValue,
+        reason: row.reason,
+        timestamp: row.timestamp,
+        previous_hash: row.previousHash,
+        hash: row.hash,
+      })),
+      meta: { total, page, perPage, hasMore: skip + rows.length < total },
+    };
+  },
+
+  /** Return ALL logs for a company ordered by time — used for chain verification. */
+  async listForVerification(companyId) {
     const rows = await prisma.auditLog.findMany({
-      where: { employeeId },
-      orderBy: { timestamp: 'desc' },
+      where: {
+        OR: [
+          { employee: { companyId } },
+          { changedBy: companyId }, // fallback in case logs have no employeeId
+        ],
+      },
+      orderBy: { timestamp: 'asc' },
     });
 
     return rows.map((row) => ({

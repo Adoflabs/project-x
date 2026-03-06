@@ -8,23 +8,27 @@ export const payFairnessService = {
     const normalized = [];
     for (const row of rows) {
       const salary = await employeeRepository.decryptSalary(row.salaryEncrypted);
+      if (salary == null) continue; // skip employees without salary
       normalized.push({
         employeeId: row.employeeId,
         score: row.score,
         salary,
         role: row.role,
+        department: row.department,
         managerId: row.managerId,
       });
     }
 
     const grouped = new Map();
     for (const row of normalized) {
-      const key =
-        groupBy === 'department'
-          ? row.department || 'unknown_department'
-          : groupBy === 'role'
-            ? row.role || 'unknown_role'
-            : 'company';
+      let key;
+      if (groupBy === 'department') {
+        key = row.department || 'unknown_department';
+      } else if (groupBy === 'role') {
+        key = row.role || 'unknown_role';
+      } else {
+        key = 'company';
+      }
       if (!grouped.has(key)) grouped.set(key, []);
       grouped.get(key).push(row);
     }

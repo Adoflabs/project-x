@@ -2,13 +2,24 @@ import { prisma } from '../config/prisma.js';
 
 export const scoreRepository = {
   async insertScore(payload) {
-    const row = await prisma.score.create({
-      data: {
+    const row = await prisma.score.upsert({
+      where: {
+        employeeId_month: {
+          employeeId: payload.employee_id,
+          month: payload.month,
+        },
+      },
+      create: {
         employeeId: payload.employee_id,
         componentValues: payload.component_values,
         finalScore: payload.final_score,
         formulaVersion: payload.formula_version,
         month: payload.month,
+      },
+      update: {
+        componentValues: payload.component_values,
+        finalScore: payload.final_score,
+        formulaVersion: payload.formula_version,
       },
     });
 

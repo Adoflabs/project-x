@@ -17,11 +17,21 @@ const querySchema = z.object({
   payBottomPct: z.coerce.number().min(0).max(100).default(50),
   starsLabel: z.string().min(1).optional(),
   overpaidLabel: z.string().min(1).optional(),
-});
+})
+  .refine((q) => q.scoreTopPct > q.scoreBottomPct, {
+    message: 'scoreTopPct must be greater than scoreBottomPct',
+    path: ['scoreTopPct'],
+  })
+  .refine((q) => q.payTopPct > q.payBottomPct, {
+    message: 'payTopPct must be greater than payBottomPct',
+    path: ['payTopPct'],
+  });
+
+import { requireCompanyAccess } from '../../middlewares/company-access.middleware.js';
 
 export const payFairnessRouter = Router();
 
-payFairnessRouter.get('/:companyId/analyze', requireAuth, allowRoles('owner', 'hr'), validate({ params: companyIdParamSchema, query: querySchema }), asyncHandler(async (req, res) => {
+payFairnessRouter.get('/:companyId/analyze', requireAuth, allowRoles('owner', 'hr'), requireCompanyAccess, validate({ params: companyIdParamSchema, query: querySchema }), asyncHandler(async (req, res) => {
   const { companyId } = req.validated.params;
   const parsed = req.validated.query;
   const analysis = await payFairnessService.analyze({

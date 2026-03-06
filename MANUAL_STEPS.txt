@@ -1,0 +1,173 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                    MANUAL STEPS TO COMPLETE SETUP                            ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 OPTION 1: AUTOMATED SETUP (RECOMMENDED)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Run this single command:
+
+    ./quick-setup.sh
+
+This will automatically:
+  ✓ Generate secure secrets
+  ✓ Update backend/.env
+  ✓ Apply database migrations
+  ✓ Generate Prisma Client
+  ✓ Setup frontend environment
+
+Then start the servers (see below).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 OPTION 2: MANUAL SETUP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1: Generate Secrets
+─────────────────────────
+
+Run these commands and copy the outputs:
+
+    node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+    node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+Edit backend/.env and replace:
+    JWT_SECRET=<paste-first-output>
+    ENCRYPTION_SECRET=<paste-second-output>
+
+─────────────────────────────────────────────────────────────────────────────
+
+STEP 2: Apply Database Migration
+─────────────────────────────────
+
+    cd backend
+    npx prisma migrate deploy
+
+Expected output:
+    ✔ Applied migration: 20260302140922_add_department_severity
+
+─────────────────────────────────────────────────────────────────────────────
+
+STEP 3: Generate Prisma Client
+───────────────────────────────
+
+    npx prisma generate
+
+Expected output:
+    ✔ Generated Prisma Client
+
+─────────────────────────────────────────────────────────────────────────────
+
+STEP 4: Setup Frontend Environment
+───────────────────────────────────
+
+    cd ../frontend
+    cp .env.example .env.local
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 START THE APPLICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TERMINAL 1 - Backend:
+─────────────────────
+
+    cd backend
+    npm run dev
+
+Expected output:
+    🚀 Server running on http://localhost:4000
+    ✅ Database connected
+
+─────────────────────────────────────────────────────────────────────────────
+
+TERMINAL 2 - Frontend:
+──────────────────────
+
+    cd frontend
+    npm run dev
+
+Expected output:
+    ▲ Next.js 16.1.6
+    - Local: http://localhost:3000
+    ✓ Ready in 2.5s
+
+─────────────────────────────────────────────────────────────────────────────
+
+BROWSER:
+────────
+
+Open: http://localhost:3000
+
+You should see:
+  ✓ Dashboard with 4 KPI cards
+  ✓ Score trend chart
+  ✓ Score distribution chart
+  ✓ Recent activity feed
+  ✓ Top performers list
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ SUCCESS CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  [ ] Secrets generated and added to backend/.env
+  [ ] Database migration applied successfully
+  [ ] Prisma Client generated
+  [ ] Frontend .env.local created
+  [ ] Backend running on port 4000
+  [ ] Frontend running on port 3000
+  [ ] Dashboard loads in browser
+  [ ] All pages accessible (check sidebar navigation)
+  [ ] No errors in browser console (F12)
+  [ ] No errors in backend terminal
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🐛 TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Port already in use:
+    lsof -ti:4000 | xargs kill -9  # Backend
+    lsof -ti:3000 | xargs kill -9  # Frontend
+
+Database connection failed:
+    - Check DATABASE_URL in backend/.env
+    - Verify database is accessible
+    - Try: npx prisma db pull
+
+Module not found:
+    cd backend && rm -rf node_modules && PUPPETEER_SKIP_DOWNLOAD=true npm install
+    cd frontend && rm -rf node_modules && npm install
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  START_HERE.md          - Quick start guide
+  SETUP_STEPS.md         - Detailed setup instructions
+  INTEGRATION_GUIDE.md   - Connect frontend to backend API
+  FEATURES.md            - Complete feature showcase
+  CHECKLIST.md           - Integration checklist
+  README.md              - Project overview
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 THAT'S IT!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Once both servers are running, you have a fully functional Employee Intelligence
+Platform with:
+
+  ✓ Beautiful dark glassmorphism UI
+  ✓ 9 fully functional pages
+  ✓ Interactive charts and visualizations
+  ✓ Responsive design
+  ✓ Mock data for development
+
+Next: Check INTEGRATION_GUIDE.md to connect to real API data!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
