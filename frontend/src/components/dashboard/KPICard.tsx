@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { LucideIcon } from 'lucide-react';
 import TrendIndicator from '../ui/TrendIndicator';
+import { Card, CardContent } from '../ui/card';
+import { Progress } from '../ui/progress';
 
 interface KPICardProps {
   title: string;
@@ -48,33 +50,30 @@ export default function KPICard({
   }, [value, delay, hasAnimated]);
 
   return (
-    <div className={`glass-card p-6 animate-fade-slide-up stagger-${Math.min(delay / 100 + 1, 6)}`}>
-      <div className="flex items-start justify-between mb-4">
-        <h3 className="text-sm font-medium text-text-secondary">{title}</h3>
-        <Icon className="w-5 h-5 text-accent-blue opacity-60" />
-      </div>
-
-      <div className="space-y-3">
-        <div className="text-4xl font-bold font-mono text-text-primary">
-          {Number.isInteger(value) ? displayValue : displayValue.toFixed(1)}
+    <Card className={`p-6 animate-fade-slide-up stagger-${Math.min(delay / 100 + 1, 6)}`}>
+      <CardContent className="p-0">
+        <div className="flex items-start justify-between mb-4">
+          <h3 className="text-sm font-medium text-text-secondary">{title}</h3>
+          <Icon className="w-5 h-5 text-white/40 opacity-60" />
         </div>
 
-        {progress !== undefined && (
-          <div className="relative h-2 bg-white/[0.05] rounded-full overflow-hidden">
-            <div
-              className="absolute inset-y-0 left-0 bg-gradient-to-r from-accent-blue to-accent-cyan rounded-full animate-progress"
-              style={{ width: `${progress}%` }}
-            />
+        <div className="space-y-3">
+          <div className="text-4xl font-bold font-mono text-text-primary">
+            {Number.isInteger(value) ? displayValue : displayValue.toFixed(1)}
           </div>
-        )}
 
-        {trend !== undefined && (
-          <div className="flex items-center gap-2">
-            <TrendIndicator value={trend} size="sm" />
-            <span className="text-xs text-text-muted">{trendLabel}</span>
-          </div>
-        )}
-      </div>
-    </div>
+          {progress !== undefined && (
+            <Progress value={progress} max={100} />
+          )}
+
+          {trend !== undefined && (
+            <div className="flex items-center gap-2">
+              <TrendIndicator value={trend} size="sm" />
+              <span className="text-xs text-text-muted">{trendLabel}</span>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
