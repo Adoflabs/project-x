@@ -79,16 +79,21 @@ export default function Header() {
           </div>
 
           {/* Notifications */}
-          <button className="relative p-2 rounded-lg hover:bg-white/[0.04] text-text-secondary hover:text-text-primary transition-colors">
+          <button 
+            onClick={() => router.push('/notifications')}
+            className="relative p-2 rounded-lg hover:bg-white/[0.04] text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
+            aria-label="Notifications"
+          >
             <Bell className="w-5 h-5" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full" />
           </button>
 
           {/* Avatar + Dropdown */}
-          <div className="relative">
+          <div className="relative z-50">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/[0.04] transition-colors"
+              className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/[0.04] transition-colors cursor-pointer"
+              aria-label="User menu"
             >
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center text-sm font-bold text-white">
                 {user?.email?.[0]?.toUpperCase() || 'U'}
@@ -102,8 +107,9 @@ export default function Header() {
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setShowUserMenu(false)}
+                  aria-hidden="true"
                 />
-                <div className="absolute right-0 top-full mt-2 w-56 glass-card p-2 z-50">
+                <div className="absolute right-0 top-full mt-2 w-56 glass-card p-2 z-50 shadow-2xl">
                   <div className="px-3 py-2 border-b border-white/[0.06] mb-2">
                     <div className="text-sm font-medium text-text-primary">{user?.email}</div>
                     <div className="text-xs text-text-muted mt-1 capitalize">{user?.role}</div>
@@ -111,9 +117,9 @@ export default function Header() {
                   <button
                     onClick={() => {
                       setShowUserMenu(false);
-                      // Navigate to profile or settings
+                      router.push('/profile');
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/[0.04] text-text-secondary text-sm transition-colors"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/[0.04] text-text-secondary text-sm transition-colors cursor-pointer text-left"
                   >
                     <User className="w-4 h-4" />
                     Profile
@@ -123,7 +129,7 @@ export default function Header() {
                       setShowUserMenu(false);
                       handleLogout();
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/[0.04] text-danger text-sm transition-colors"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/[0.04] text-danger text-sm transition-colors cursor-pointer text-left"
                   >
                     <LogOut className="w-4 h-4" />
                     Logout

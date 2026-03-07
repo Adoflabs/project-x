@@ -21,10 +21,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       const mockUser: AppUser = {
         id: 'dev-user-1',
         email: 'dev@veridion.com',
-        name: 'Dev User',
         role: 'owner',
         companyId: 'dev-company-1',
-        companyName: 'Veridion Demo',
       };
       set({ user: mockUser, isAuthenticated: true });
     }

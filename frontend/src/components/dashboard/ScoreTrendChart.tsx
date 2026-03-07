@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -13,16 +14,38 @@ interface ScoreTrendChartProps {
   }>;
 }
 
+type TimeRange = 'weekly' | 'monthly' | 'quarterly';
+
 export default function ScoreTrendChart({ data }: ScoreTrendChartProps) {
+  const [timeRange, setTimeRange] = useState<TimeRange>('weekly');
+
   return (
     <Card className="animate-fade-slide-up stagger-2">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Score Trends</CardTitle>
           <div className="flex items-center gap-2">
-            <Button variant="default" size="sm">Weekly</Button>
-            <Button variant="ghost" size="sm">Monthly</Button>
-            <Button variant="ghost" size="sm">Quarterly</Button>
+            <Button 
+              variant={timeRange === 'weekly' ? 'default' : 'ghost'} 
+              size="sm"
+              onClick={() => setTimeRange('weekly')}
+            >
+              Weekly
+            </Button>
+            <Button 
+              variant={timeRange === 'monthly' ? 'default' : 'ghost'} 
+              size="sm"
+              onClick={() => setTimeRange('monthly')}
+            >
+              Monthly
+            </Button>
+            <Button 
+              variant={timeRange === 'quarterly' ? 'default' : 'ghost'} 
+              size="sm"
+              onClick={() => setTimeRange('quarterly')}
+            >
+              Quarterly
+            </Button>
           </div>
         </div>
       </CardHeader>

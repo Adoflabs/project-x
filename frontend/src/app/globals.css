@@ -54,6 +54,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Ensure all buttons have pointer cursor */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 /* Background gradient mesh */
 body::before {
   content: "";

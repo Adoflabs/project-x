@@ -31,11 +31,17 @@ export default function EmployeeTable({ employees, onRowClick }: EmployeeTablePr
         </h2>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <button className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white text-sm font-medium transition-colors flex items-center gap-2">
+          <button 
+            onClick={() => console.log('Add employee clicked')}
+            className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-white text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer"
+          >
             <UserPlus className="w-4 h-4" />
             Add Employee
           </button>
-          <button className="px-3 py-2 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] text-text-secondary text-sm transition-colors flex items-center gap-2">
+          <button 
+            onClick={() => console.log('Import CSV clicked')}
+            className="px-3 py-2 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] text-text-secondary text-sm transition-colors flex items-center gap-2 cursor-pointer"
+          >
             <Upload className="w-4 h-4" />
             Import CSV
           </button>
@@ -54,11 +60,17 @@ export default function EmployeeTable({ employees, onRowClick }: EmployeeTablePr
             className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-text-primary placeholder:text-text-muted outline-none focus:border-white/30 focus:shadow-[0_0_0_2px_rgba(255,255,255,0.1)] transition-all"
           />
         </div>
-        <button className="px-4 py-2 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] text-text-secondary text-sm transition-colors flex items-center gap-2">
+        <button 
+          onClick={() => console.log('Filter clicked')}
+          className="px-4 py-2 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] text-text-secondary text-sm transition-colors flex items-center gap-2 cursor-pointer"
+        >
           <Filter className="w-4 h-4" />
           Filter
         </button>
-        <button className="px-4 py-2 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] text-text-secondary text-sm transition-colors flex items-center gap-2">
+        <button 
+          onClick={() => console.log('Columns clicked')}
+          className="px-4 py-2 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] text-text-secondary text-sm transition-colors flex items-center gap-2 cursor-pointer"
+        >
           <Columns className="w-4 h-4" />
           Columns
         </button>
@@ -159,13 +171,23 @@ export default function EmployeeTable({ employees, onRowClick }: EmployeeTablePr
           Showing 1–{filteredEmployees.length} of {employees.length} employees
         </div>
         <div className="flex items-center gap-2">
-          <button className="px-3 py-1.5 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] text-text-secondary text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <button 
+            onClick={() => console.log('Previous page')}
+            disabled={true}
+            className="px-3 py-1.5 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] text-text-secondary text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
             Previous
           </button>
-          <button className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-medium">
+          <button 
+            className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-medium cursor-pointer"
+          >
             1
           </button>
-          <button className="px-3 py-1.5 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] text-text-secondary text-sm transition-colors">
+          <button 
+            onClick={() => console.log('Next page')}
+            disabled={true}
+            className="px-3 py-1.5 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] text-text-secondary text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
             Next
           </button>
         </div>
